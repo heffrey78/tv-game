@@ -1,0 +1,141 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #000;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #000;
+}
+
+.game-container {
+  position: relative;
+  width: 800px;
+  margin: 0 auto;
+}
+
+.game-title {
+  font-size: 2.5rem;
+  text-align: center;
+  color: white;
+  margin-bottom: 2rem;
+  font-family: monospace;
+}
+
+.game-board {
+  position: relative;
+  overflow: hidden;
+  border: 4px solid #333;
+  width: 800px;
+  height: 600px;
+  background-color: black;
+}
+
+.player {
+  position: absolute;
+  bottom: 0;
+  width: 48px;
+  height: 48px;
+  background-color: #22c55e;
+  border-radius: 8px 8px 0 0;
+  transform: translateX(-50%);
+}
+
+.tv {
+  position: absolute;
+  transform: translateX(-50%);
+  color: white;
+}
+
+.shot {
+  position: absolute;
+  width: 8px;
+  height: 16px;
+  background-color: #facc15;
+  transform: translateX(-50%);
+}
+
+.hud {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  color: white;
+  font-family: monospace;
+}
+
+.flash-effect {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  height: 100%;
+}
+
+.flash-effect > div {
+  width: 16.666667%;
+}
+
+.flash-effect > div:nth-child(1) { background-color: #ef4444; }
+.flash-effect > div:nth-child(2) { background-color: #22c55e; }
+.flash-effect > div:nth-child(3) { background-color: #3b82f6; }
+.flash-effect > div:nth-child(4) { background-color: #eab308; }
+.flash-effect > div:nth-child(5) { background-color: #a855f7; }
+.flash-effect > div:nth-child(6) { background-color: #06b6d4; }
+
+.game-over {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-over-content {
+  text-align: center;
+  color: white;
+  font-family: monospace;
+}
+
+.game-over-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.game-over-score {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.restart-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: white;
+  color: black;
+  border: none;
+  cursor: pointer;
+  font-family: monospace;
+}
+
+.restart-button:hover {
+  background-color: #e5e5e5;
+}
+
+.instructions {
+  text-align: center;
+  font-family: monospace;
+  margin-top: 1rem;
+  color: white;
+}
+
+.instructions p:last-child {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}

@@ -1,0 +1,53 @@
+.game-over-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.game-over-content {
+  text-align: center;
+  color: white;
+}
+
+.game-over-title {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.final-score-container {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.restart-button {
+  background-color: #ff5722;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.restart-button:hover {
+  background-color: #e64a19;
+}
+
+.button-shadow {
+  display: block;
+  margin-top: 5px;
+  height: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
+  transition: height 0.3s;
+}
+
+.restart-button:hover .button-shadow {
+  height: 10px;
+}

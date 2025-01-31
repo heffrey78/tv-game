@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Tv } from 'lucide-react';
+import './Game.css';
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
@@ -30,6 +31,7 @@ const Game: React.FC = () => {
   const [isFlashing, setIsFlashing] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [keys, setKeys] = useState<Set<string>>(new Set());
+  const [gameStarted, setGameStarted] = useState(false);
 
   // Key event handlers
   useEffect(() => {
@@ -56,7 +58,7 @@ const Game: React.FC = () => {
 
   // Game loop
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || !gameStarted) return;
 
     const gameLoop = setInterval(() => {
       // Player movement
@@ -85,30 +87,29 @@ const Game: React.FC = () => {
 
       // Collision detection
       setTvs(prevTvs => {
-        const survivingTvs = prevTvs.filter(tv => {
+        return prevTvs.filter(tv => {
           // Check if TV hit the ground
           if (tv.y >= GAME_HEIGHT - 30) {
             setIsFlashing(true);
             setTimeout(() => setIsFlashing(false), FLASH_DURATION);
-            setHealth(h => h - 1);
+            setHealth(h => {
+              const newHealth = h - 1;
+              console.log('TV hit the ground, health:', newHealth);
+              return newHealth;
+            });
             return false;
           }
 
           // Check if TV was hit by a shot
-          const wasHit = shots.some(shot => 
-            Math.abs(shot.x - tv.x) < 20 && 
-            Math.abs(shot.y - tv.y) < 20
-          );
-
-          if (wasHit) {
-            setScore(s => s + 100);
-            return false;
+          for (const shot of shots) {
+            if (Math.abs(shot.x - tv.x) < 20 && Math.abs(shot.y - tv.y) < 20) {
+              setScore(s => s + 100);
+              return false;
+            }
           }
 
           return true;
         });
-
-        return survivingTvs;
       });
 
       // Clean up shots that are off screen
@@ -116,6 +117,7 @@ const Game: React.FC = () => {
 
       // Check game over
       if (health <= 0) {
+        console.log('Game over triggered');
         setGameOver(true);
       }
     }, 1000 / 60); // 60 FPS
@@ -125,7 +127,7 @@ const Game: React.FC = () => {
 
   // Spawn TVs
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || !gameStarted) return;
 
     const spawnTV = setInterval(() => {
       setTvs(prevTvs => [
@@ -139,7 +141,7 @@ const Game: React.FC = () => {
     }, TV_SPAWN_INTERVAL);
 
     return () => clearInterval(spawnTV);
-  }, [gameOver]);
+  }, [gameOver, gameStarted]);
 
   // Shooting
   useEffect(() => {
@@ -167,70 +169,88 @@ const Game: React.FC = () => {
 
   return (
     <div className="game-container">
-      <div className="game-board">
-        {/* Test pattern flash effect */}
-        {isFlashing && (
-          <div className="flash-effect">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-        )}
+      {!gameStarted && (
+        <div className="start-screen">
+          <h2 className="start-title">Welcome to Terminal Velocity</h2>
+          <button
+            className="start-button"
+            onClick={() => setGameStarted(true)}
+          >
+            Start Game
+          </button>
+        </div>
+      )}
 
-        {/* Game elements */}
-        <div style={{ position: 'absolute', inset: 0 }}>
-          {/* Player */}
-          <div 
-            className="player"
-            style={{ left: playerX }}
-          />
-
-          {/* TVs */}
-          {tvs.map(tv => (
-            <div
-              key={tv.id}
-              className="tv"
-              style={{ left: tv.x, top: tv.y }}
-            >
-              <Tv size={24} />
+      {gameStarted && (
+        <div className="game-board">
+          {/* Test pattern flash effect */}
+          {isFlashing && (
+            <div className="flash-effect">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
-          ))}
+          )}
 
-          {/* Shots */}
-          {shots.map(shot => (
-            <div
-              key={shot.id}
-              className="shot"
-              style={{ left: shot.x, top: shot.y }}
+          {/* Game elements */}
+          <div style={{ position: 'absolute', inset: 0 }}>
+            {/* Player */}
+            <div 
+              className="player"
+              style={{ left: playerX }}
             />
-          ))}
-        </div>
 
-        {/* HUD */}
-        <div className="hud">
-          <div>SCORE: {score}</div>
-          <div>HEALTH: {'♥'.repeat(health)}</div>
-        </div>
-
-        {/* Game Over */}
-        {gameOver && (
-          <div className="game-over">
-            <div className="game-over-content">
-              <h2 className="game-over-title">GAME OVER</h2>
-              <p className="game-over-score">Final Score: {score}</p>
-              <button
-                className="restart-button"
-                onClick={handleRestart}
+            {/* TVs */}
+            {tvs.map(tv => (
+              <div
+                key={tv.id}
+                className="tv"
+                style={{ left: tv.x, top: tv.y }}
               >
-                PLAY AGAIN
-              </button>
-            </div>
+                <Tv size={24} />
+              </div>
+            ))}
+
+            {/* Shots */}
+            {shots.map(shot => (
+              <div
+                key={shot.id}
+                className="shot"
+                style={{ left: shot.x, top: shot.y }}
+              />
+            ))}
           </div>
-        )}
-      </div>
+
+          {/* HUD */}
+          <div className="hud">
+            <div>SCORE: {score}</div>
+            <div>HEALTH: {'♥'.repeat(Math.max(0, health))}</div>
+          </div>
+
+          {/* Game Over Screen */}
+          {gameOver && (
+            <div className="game-over-overlay">
+              <div className="game-over-content">
+                <h2 className="game-over-title animate-pulse">GAME OVER</h2>
+                <div className="final-score-container">
+                  <span className="score-label">FINAL SCORE:</span>
+                  <span className="score-value">{score}</span>
+                </div>
+                <button
+                  className="restart-button animate-fade-in-up"
+                  onClick={handleRestart}
+                >
+                  <span className="button-text">PLAY AGAIN</span>
+                  <span className="button-shadow"></span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Instructions */}
       <div className="instructions">
